@@ -1,0 +1,19 @@
+{
+  "name": "obsidian",
+  "version": "0.0.0",
+  "description": "application for determining flight information and price based analytics",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enpfeff/Obsidian.git"
+  },
+  "author": "enpfeff",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/enpfeff/Obsidian/issues"
+  },
+  "homepage": "https://github.com/enpfeff/Obsidian#readme"
+}
