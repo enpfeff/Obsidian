@@ -12,6 +12,13 @@ function isTrueParam(x) {
     return _.isString(x) ? (x === 'true') : !!x;
 }
 
+
+// UI BUILD
+const uiLocation = './app/ui';
+module.exports.UI_ENV = process.env.UI_ENV || 'development';
+module.exports.UI_LOCATION = uiLocation;
+module.exports.UI_DIST = uiLocation + '/dist';
+
 // NODE ENVIRONMENT
 module.exports.NODE_ENV = process.env.NODE_ENV || 'development';
 module.exports.PORT = process.env.PORT || 3000;
