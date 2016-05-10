@@ -22,6 +22,7 @@ module.exports.UI_DIST = './dist';
 // NODE ENVIRONMENT
 module.exports.NODE_ENV = process.env.NODE_ENV || 'development';
 module.exports.PORT = process.env.PORT || 3000;
+module.exports.COMPRESSION = isTrueParam(process.env.COMPRESSION) || false;
 
 // LOGGING OPTIONS
 module.exports.LOG_LEVEL = process.env.LOG_LEVEL || 'info';
