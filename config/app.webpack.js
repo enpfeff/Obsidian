@@ -30,7 +30,7 @@ function init(manifest, prod) {
             errorDetails: true
         },
         resolve: {
-            root: [path.resolve("./vendor/js")],
+            root: [path.resolve("./vendor/js")]
         },
         plugins: [
             new webpack.DllReferencePlugin({

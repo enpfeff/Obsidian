@@ -5,7 +5,9 @@
  * @since 5/2/16
  */
 "use strict";
-myFunc();
-function myFunc() {
-    console.log('hi Ian');
-}
+
+const requires = [];
+let app = angular.module('App', requires);
+
+
+module.exports = app;
