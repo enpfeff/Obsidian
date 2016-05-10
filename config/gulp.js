@@ -17,7 +17,7 @@ function getConfig() {
         dist: dist,
         allDist: dist + '/**/*.*',
 
-        clean: [dist],
+        clean: [dist, './.happypack'],
 
         fonts: {
             src: [

@@ -18,7 +18,6 @@ var del = require('del');
 var nodemon = require('gulp-nodemon');
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
-var livereload = require('gulp-livereload');
 var runSequence = require('run-sequence');
 var cssNano = require('gulp-cssnano');
 var path = require('path');
@@ -46,14 +45,13 @@ process.on('SIGINT', interupt);
 process.on('SIGTERM', interupt);
 
 function interupt() {
-    livereload.server && livereload.server.close();
     process.exit(0);
 }
 
 var tasks = {
     // cleaning up the dist folder more than likely
     clean: function () {
-        del(config.clean);
+        return del(config.clean);
     },
 
     fonts: function () {
@@ -66,12 +64,7 @@ var tasks = {
             .pipe(jshint.reporter(stylish))
             .pipe(jshint.reporter('fail'));
     },
-
-    livereload: function () {
-        gutil.log("starting Live reload");
-        livereload.listen();
-    },
-
+    
     buildLib: function (done) {
         webpack(libWebpackConfig(prod), function (err, stats) {
             if (err) {
@@ -86,7 +79,7 @@ var tasks = {
 
     //webpack build the js
     buildJs: function (done) {
-        webpack(appWebpackConfig(c.UI_DIST + '/vendor-manifest.json', prod), function (err, stats) {
+        webpack(appWebpackConfig(path.normalize(__dirname + "/" + c.UI_DIST + '/vendor-manifest.json'), prod), function (err, stats) {
             if (err) throw new gutil.PluginError("webpack", err);
 
             gutil.log("[webpack]", stats.toString({
@@ -108,7 +101,7 @@ var tasks = {
     },
 
     vendorCss: function () {
-        var pipeline = gulp.src(config.vendor.css)
+        let pipeline = gulp.src(config.vendor.css)
             .pipe(concatCss('vendor.bundle.css'), {rebaseUrls: false})
             .pipe(replace('../material-design-icons/iconfont', '../fonts'))
             .pipe(replace('../../fonts', '../fonts'));
@@ -118,31 +111,23 @@ var tasks = {
         }
 
         return pipeline.pipe(gulp.dest(config.vendor.distCss));
-
     },
 
-    // watch tasks for us
     watch: {
         js: function () {
-            gulp.watch(config.js.all, ['buildAll']);
-        },
-        reload: function () {
-            gulp.watch(config.allDist).on('change', livereload.changed);
-        },
-        images: function () {
-            gulp.watch(config.images.src, ['buildImgs']);
+            gulp.watch(config.js.src, ['lint']);
         }
     }
+
 };
 
 //lint JS assets only
 var deps = [];
-var lint = prod ? [] : ['lint'];
 
 // GULP inner tasks not first class citizens
 gulp.task('lint', tasks.lint);
 gulp.task('clean', tasks.clean);
-gulp.task("buildJs", deps.concat(lint), tasks.buildJs);
+gulp.task("buildJs", deps, tasks.buildJs);
 gulp.task('vendorCss', deps, tasks.vendorCss);
 gulp.task('buildImgs', deps, tasks.buildImgs);
 gulp.task('lib', deps, tasks.buildLib);
@@ -155,7 +140,7 @@ gulp.task('buildAll', ['buildJs'], tasks.normalizeCss);
  */
 
 gulp.task('build', function (done) {
-    runSequence('clean', ['lib', 'vendorCss', 'buildImgs'], 'fonts', 'buildAll', function () {
+    runSequence('clean', ['vendorCss', 'lib', 'buildImgs'], 'fonts', 'buildAll', function () {
         done();
     });
 });
@@ -165,19 +150,26 @@ gulp.task('build', function (done) {
  * Main Gulp build task for DEVELOPMENT
  */
 
-gulp.task('watch', function (done) {
-    tasks.livereload();
-
-    runSequence('clean', ['lib', 'vendorCss', 'buildImgs'], 'fonts', 'buildAll', function () {
-        _.each(tasks.watch, function (watch, key) {
-            watch();
-        });
-
-        gutil.log(chalk.green('---------------------------'));
-        gutil.log(chalk.green('Watching For Changes'));
-        gutil.log(chalk.green('---------------------------'));
-
+gulp.task('setupDev', function (done) {
+    runSequence('clean', ['vendorCss', 'lib', 'buildImgs'], 'fonts', function () {
         done();
     });
+});
+
+
+/*********************************************************************************
+ * Main Gulp build task for Linting Code
+ */
+
+gulp.task('watch', function(done) {
+    runSequence('lint',function() {
+        tasks.watch.js();     
+    });
+
+    gutil.log(chalk.green('---------------------------'));
+    gutil.log(chalk.green('Watching For Changes'));
+    gutil.log(chalk.green('---------------------------'));
+
+    done();
 
 });

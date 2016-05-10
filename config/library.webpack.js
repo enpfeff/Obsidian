@@ -8,7 +8,7 @@
 
 var webpack = require('webpack');
 var path = require('path');
-var dist = './dist';
+
 const c = require('../app/utils/constants');
 
 function init(prod) {
@@ -49,7 +49,7 @@ function init(prod) {
                 // The path to the manifest file which maps between
                 // modules included in a bundle and the internal IDs
                 // within that bundle
-                path: 'dist/[name]-manifest.json',
+                path: [c.UI_DIST, '[name]-manifest.json'].join('/'),
                 // The name of the global variable which the library's
                 // require function has been assigned to. This must match the
                 // output.library option above
