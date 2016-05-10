@@ -1,11 +1,3 @@
-/**
- * @summary Ian needs to change this
- * @module gulpfile.js
- * @memberof Ian needs to change this
- * @since 5/2/16
- */
-'use strict';
-
 'use strict';
 
 var gulp = require("gulp");
@@ -24,23 +16,21 @@ var path = require('path');
 var replace = require('gulp-replace');
 var imageOp = require('gulp-image-optimization');
 const c = require('./app/utils/constants');
-const _ = require('lodash');
 const gulpConfig = require('./config/gulp');
+var libWebpackConfig = require('./config/library.webpack');
+var appWebpackConfig = require('./config/app.webpack');
 
 // determine if we are in a production build
 var env = c.UI_ENV;
 var prod = (env === 'production' || false);
 var config = gulpConfig.getConfig(prod);
 
-var libWebpackConfig = require('./config/library.webpack');
-var appWebpackConfig = require('./config/app.webpack');
-
 // State Production or Not
 gutil.log(chalk.green('---------------------------------------------'));
 prod ? gutil.log(chalk.red('Using Production Mode')) : gutil.log(chalk.green('Using Dev Mode'));
 gutil.log(chalk.green('---------------------------------------------'));
 
-// we need this to end the the live reload correctly
+// exit gracefully
 process.on('SIGINT', interupt);
 process.on('SIGTERM', interupt);
 
@@ -49,7 +39,6 @@ function interupt() {
 }
 
 var tasks = {
-    // cleaning up the dist folder more than likely
     clean: function () {
         return del(config.clean);
     },
@@ -77,7 +66,6 @@ var tasks = {
         });
     },
 
-    //webpack build the js
     buildJs: function (done) {
         webpack(appWebpackConfig(path.normalize(__dirname + "/" + c.UI_DIST + '/vendor-manifest.json'), prod), function (err, stats) {
             if (err) throw new gutil.PluginError("webpack", err);
@@ -121,7 +109,7 @@ var tasks = {
 
 };
 
-//lint JS assets only
+// universal dependencies go here
 var deps = [];
 
 // GULP inner tasks not first class citizens
@@ -158,7 +146,7 @@ gulp.task('setupDev', function (done) {
 
 
 /*********************************************************************************
- * Main Gulp build task for Linting Code
+ * Main Gulp build task for Linting UI Code
  */
 
 gulp.task('watch', function(done) {
